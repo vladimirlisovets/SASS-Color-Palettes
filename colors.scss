@@ -1,0 +1,93 @@
+
+	// $colors would store final generated scheme
+
+	$colors : ();
+
+
+	// Base colors schemes
+	// Simple lists to set up base colors could be used as well
+
+	// scheme will be selected from the $scheme value,
+	// which is the name of the scheme you want to use
+
+	$schemes : map-get((
+		
+	    escala : (
+
+	      pale-silver : #777777,
+	      blue-ncs    : #0084B4,
+	      mint-cream  : #f5f8fa,
+	      platinum    : #e7e7e7,
+	      cadet-grey  : #93a3b5
+
+	    ),
+
+	    primavera : (
+
+	      jet                 : #333333,
+	      wintergreen-dream   : #588C73,
+	      eton-blue           : #8FC0A9,
+	      sunglow             : #FFC33C,
+	      light-khaki         : #F2E394,
+	      bege                : #FAF3DD
+
+	    )
+    
+      // , scheme-name : ( color-name : color-value (hex,rgba,rgb,etc...))
+
+	), $scheme);
+
+
+	// sub-palette will used to add sub-values at every color from the palette
+	// you can add any color alternative you wish here
+
+	@function sub-palette($color, $percentage, $opacity) {
+
+		$map : (
+
+	      base        : $color,
+	      light       : lighten($color, $percentage),
+	      dark        : darken($color, $percentage),
+	      transparent : transparentize($color, $opacity)
+      
+        // variant-key : variant-value
+
+		);
+
+		@return $map;
+
+	}
+
+	// append new elements to a $map
+	// Will be used to add sub-palette into a palette
+
+	@function append($map, $key, $value) {
+		@return map-merge($map, ($key : $value));
+	}
+
+
+	// color() returns base color
+
+	@function color($color) {
+		@return map-get(map-get($colors, $color), base);
+	}
+
+
+	// color-variant() would return a variation from the base color
+	// Variations are defined in the sub-palette()
+
+	@function color-variant($color, $tone) {
+		@return map-get(map-get($colors, $color), $tone);
+	}
+
+
+	// Loop and complete the task by generating a complete map,
+	// out from the base color scheme
+
+	@each $key, $value in $schemes {
+
+		$tmp : ();
+		$tmp : append($tmp, $key, sub-palette($value, 50%, 0.5));
+		$colors : map-merge($colors, $tmp);
+
+	}
